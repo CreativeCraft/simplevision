@@ -55,8 +55,7 @@ public class NightvisionPlugin extends JavaPlugin {
         BukkitCommandManager commandManager = new BukkitCommandManager(this);
         CommandReplacements replacements = commandManager.getCommandReplacements();
 
-        replacements.addReplacement("nightvision", getConfig().get("command", "nightvision"));
-        replacements.addReplacements(getConfig().getStringList("commands").toArray());
+        replacements.addReplacement("nightvision", getConfig().getString("command", "nightvision"));
 
         commandManager.setFormat(MessageType.ERROR, ChatColor.GREEN, ChatColor.WHITE, ChatColor.GRAY);
         commandManager.setFormat(MessageType.SYNTAX, ChatColor.GREEN, ChatColor.WHITE, ChatColor.GRAY);
@@ -71,7 +70,6 @@ public class NightvisionPlugin extends JavaPlugin {
      * Register the plugin configuration.
      */
     public void registerConfigs() {
-        getConfig().addDefaults("")
         getConfig().addDefault("command", "nightvision");
         getConfig().options().copyDefaults(true);
         saveConfig();
@@ -126,9 +124,11 @@ public class NightvisionPlugin extends JavaPlugin {
      * @return String
      */
     public String localize(String key) {
+        String message = messagesConfig.getMessages().getString(key);
+
         return ChatColor.translateAlternateColorCodes(
             '&',
-            messagesConfig.getMessages().getString(key, key + " is missing.")
+            message == null ? key + " not found." : message
         );
     }
 

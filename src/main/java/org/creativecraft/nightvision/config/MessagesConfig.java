@@ -14,6 +14,7 @@ public class MessagesConfig {
     public MessagesConfig(NightvisionPlugin plugin) {
         this.plugin = plugin;
         this.register();
+        this.setDefaults();
     }
 
     /**
@@ -31,8 +32,6 @@ public class MessagesConfig {
 
         try {
             messages.load(messagesFile);
-            setDefaults();
-            messages.save(messagesFile);
         } catch (Exception e) {
             //
         }
@@ -65,6 +64,8 @@ public class MessagesConfig {
         messages.addDefault("messages.help.description", "View the Nightvision help.");
 
         messages.options().copyDefaults(true);
+
+        saveMessages();
     }
 
     /**
@@ -83,5 +84,18 @@ public class MessagesConfig {
      */
     public File getMessagesFile() {
         return messagesFile;
+    }
+
+    /**
+     * Save the messages file.
+     *
+     * @return void
+     */
+    public void saveMessages() {
+        try {
+            messages.save(messagesFile);
+        } catch (Exception e) {
+            //
+        }
     }
 }
