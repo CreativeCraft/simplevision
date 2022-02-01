@@ -1,6 +1,6 @@
-name: Nightvision
+name: SimpleVision
 version: "${version}"
-description: "A simple nightvision plugin."
-main: org.creativecraft.nightvision.NightvisionPlugin
+description: "A simple & configurable nightvision plugin."
+main: org.creativecraft.simplevision.SimpleVisionPlugin
 softdepend: [PlaceholderAPI]
 api-version: 1.18

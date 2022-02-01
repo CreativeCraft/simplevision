@@ -1,17 +1,17 @@
-package org.creativecraft.nightvision.config;
+package org.creativecraft.simplevision.config;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.creativecraft.nightvision.NightvisionPlugin;
+import org.creativecraft.simplevision.SimpleVisionPlugin;
 
 import java.io.File;
 
 public class MessagesConfig {
-    private final NightvisionPlugin plugin;
+    private final SimpleVisionPlugin plugin;
     private FileConfiguration messages;
     private File messagesFile;
 
-    public MessagesConfig(NightvisionPlugin plugin) {
+    public MessagesConfig(SimpleVisionPlugin plugin) {
         this.plugin = plugin;
         this.register();
         this.setDefaults();
@@ -56,12 +56,12 @@ public class MessagesConfig {
 
         messages.addDefault("messages.reload.success", "Nightvision has been &asuccessfully&f reloaded.");
         messages.addDefault("messages.reload.failed", "Nightvision &cfailed&f to reload. Check console for details.");
-        messages.addDefault("messages.reload.description", "Reload the Nightvision plugin configuration.");
+        messages.addDefault("messages.reload.description", "Reload the plugin configuration.");
 
         messages.addDefault("messages.help.header", "&a&m+&8&m                              &a&l Night&fVision &8&m                              &a&m+");
         messages.addDefault("messages.help.format", "&8➝ &a/{command} &7{parameters} &f- {description}");
         messages.addDefault("messages.help.footer", "&a&m+&8&m                                                                            &a&m+");
-        messages.addDefault("messages.help.description", "View the Nightvision help.");
+        messages.addDefault("messages.help.description", "View the plugin help.");
 
         messages.options().copyDefaults(true);
 

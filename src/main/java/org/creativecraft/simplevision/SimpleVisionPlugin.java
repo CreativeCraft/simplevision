@@ -1,26 +1,31 @@
-package org.creativecraft.nightvision;
+package org.creativecraft.simplevision;
 
 import co.aikar.commands.BukkitCommandManager;
 import co.aikar.commands.CommandReplacements;
 import co.aikar.commands.MessageType;
 import de.themoep.minedown.MineDown;
 import net.md_5.bungee.api.ChatMessageType;
+import org.bstats.bukkit.MetricsLite;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.creativecraft.nightvision.commands.NightvisionCommand;
-import org.creativecraft.nightvision.config.MessagesConfig;
-import org.creativecraft.nightvision.config.UserDataConfig;
-import org.creativecraft.nightvision.integrations.PlaceholderApi;
-import org.creativecraft.nightvision.listener.EventListener;
+import org.creativecraft.simplevision.commands.NightvisionCommand;
+import org.creativecraft.simplevision.config.MessagesConfig;
+import org.creativecraft.simplevision.config.UserDataConfig;
+import org.creativecraft.simplevision.integrations.PlaceholderApi;
+import org.creativecraft.simplevision.listener.EventListener;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class NightvisionPlugin extends JavaPlugin {
-    public static NightvisionPlugin plugin;
+public class SimpleVisionPlugin extends JavaPlugin {
+    public static SimpleVisionPlugin plugin;
     private MessagesConfig messagesConfig;
     private UserDataConfig userDataConfig;
 
+    /**
+     * Enable the plugin.
+     */
     @Override
     public void onEnable() {
         plugin = this;
@@ -34,18 +39,23 @@ public class NightvisionPlugin extends JavaPlugin {
             new PlaceholderApi(this).register();
         }
 
-        // new MetricsLite(this, 13987);
+        new MetricsLite(this, 14147);
     }
 
+    /**
+     * Load the plugin.
+     */
     @Override
     public void onLoad() {
         //
     }
 
+    /**
+     * Disable the plugin.
+     */
     @Override
     public void onDisable() {
         Bukkit.getScheduler().cancelTasks(plugin);
-        userDataConfig.saveUserData();
     }
 
     /**
@@ -55,7 +65,7 @@ public class NightvisionPlugin extends JavaPlugin {
         BukkitCommandManager commandManager = new BukkitCommandManager(this);
         CommandReplacements replacements = commandManager.getCommandReplacements();
 
-        replacements.addReplacement("nightvision", getConfig().getString("command", "nightvision"));
+        replacements.addReplacement("simplevision", getConfig().getString("command", "nightvision"));
 
         commandManager.setFormat(MessageType.ERROR, ChatColor.GREEN, ChatColor.WHITE, ChatColor.GRAY);
         commandManager.setFormat(MessageType.SYNTAX, ChatColor.GREEN, ChatColor.WHITE, ChatColor.GRAY);
@@ -71,6 +81,7 @@ public class NightvisionPlugin extends JavaPlugin {
      */
     public void registerConfigs() {
         getConfig().addDefault("command", "nightvision");
+        getConfig().addDefault("nightvision.show-action-bar", true);
         getConfig().options().copyDefaults(true);
         saveConfig();
 
@@ -89,13 +100,15 @@ public class NightvisionPlugin extends JavaPlugin {
      * Register the plugin schedulers.
      */
     public void registerSchedulers() {
-        Bukkit.getScheduler().runTaskTimer(this, () -> {
-            for (Player player : Bukkit.getOnlinePlayers()) {
-                if (userDataConfig.getUserData().getBoolean("players." + player.getUniqueId())) {
-                    plugin.sendActionMessage(player, plugin.localize("messages.toggle.action-bar"));
+        if (getConfig().getBoolean("nightvision.show-action-bar", true)) {
+            Bukkit.getScheduler().runTaskTimer(this, () -> {
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    if (userDataConfig.getUserData().getBoolean("players." + player.getUniqueId())) {
+                        plugin.sendActionMessage(player, plugin.localize("messages.toggle.action-bar"));
+                    }
                 }
-            }
-        }, 20L, 1L);
+            }, 20L, 1L);
+        }
     }
 
     /**
@@ -103,8 +116,8 @@ public class NightvisionPlugin extends JavaPlugin {
      *
      * @return MessagesConfig
      */
-    public MessagesConfig getMessagesConfig() {
-        return messagesConfig;
+    public FileConfiguration getMessagesConfig() {
+        return messagesConfig.getMessages();
     }
 
     /**
@@ -112,10 +125,16 @@ public class NightvisionPlugin extends JavaPlugin {
      *
      * @return MessagesConfig
      */
-    public UserDataConfig getUserDataConfig() {
-        return userDataConfig;
+    public FileConfiguration getUserDataConfig() {
+        return userDataConfig.getUserData();
     }
 
+    /**
+     * Save the userdata configuration.
+     */
+    public void saveUserDataConfig() {
+        userDataConfig.saveUserData();
+    }
 
     /**
      * Retrieve a localized message.

@@ -1,17 +1,17 @@
-package org.creativecraft.nightvision.config;
+package org.creativecraft.simplevision.config;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.creativecraft.nightvision.NightvisionPlugin;
+import org.creativecraft.simplevision.SimpleVisionPlugin;
 
 import java.io.File;
 
 public class UserDataConfig {
-    private final NightvisionPlugin plugin;
+    private final SimpleVisionPlugin plugin;
     private FileConfiguration userData;
     private File userDataFile;
 
-    public UserDataConfig(NightvisionPlugin plugin) {
+    public UserDataConfig(SimpleVisionPlugin plugin) {
         this.plugin = plugin;
         this.register();
     }

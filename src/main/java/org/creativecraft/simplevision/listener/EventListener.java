@@ -1,4 +1,4 @@
-package org.creativecraft.nightvision.listener;
+package org.creativecraft.simplevision.listener;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -8,17 +8,16 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.potion.PotionEffectType;
-import org.creativecraft.nightvision.Nightvision;
-import org.creativecraft.nightvision.NightvisionPlugin;
+import org.creativecraft.simplevision.Nightvision;
+import org.creativecraft.simplevision.SimpleVisionPlugin;
 
 public class EventListener implements Listener {
-    private final NightvisionPlugin plugin;
+    private final SimpleVisionPlugin plugin;
     private final Nightvision nightvision;
 
-    public EventListener(NightvisionPlugin plugin) {
+    public EventListener(SimpleVisionPlugin plugin) {
         this.plugin = plugin;
         this.nightvision = new Nightvision(plugin);
     }
@@ -32,7 +31,7 @@ public class EventListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
 
-        if (plugin.getUserDataConfig().getUserData().getBoolean("players." + player.getUniqueId().toString())) {
+        if (plugin.getUserDataConfig().getBoolean("players." + player.getUniqueId().toString())) {
             nightvision.enable(player);
         }
     }
@@ -47,7 +46,7 @@ public class EventListener implements Listener {
         Player player = event.getPlayer();
 
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
-            if (plugin.getUserDataConfig().getUserData().getBoolean("players." + player.getUniqueId().toString())) {
+            if (plugin.getUserDataConfig().getBoolean("players." + player.getUniqueId().toString())) {
                 nightvision.enable(player);
             }
         }, 20);
@@ -67,6 +66,12 @@ public class EventListener implements Listener {
             !player.hasPotionEffect(PotionEffectType.NIGHT_VISION) ||
             !nightvision.isEnabled(player)
         ) {
+            return;
+        }
+
+        if (!plugin.getConfig().getBoolean("nightvision.persist.milkbucket")) {
+            nightvision.disable(player);
+
             return;
         }
 

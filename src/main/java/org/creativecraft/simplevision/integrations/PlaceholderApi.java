@@ -1,16 +1,16 @@
-package org.creativecraft.nightvision.integrations;
+package org.creativecraft.simplevision.integrations;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
-import org.creativecraft.nightvision.Nightvision;
-import org.creativecraft.nightvision.NightvisionPlugin;
+import org.creativecraft.simplevision.Nightvision;
+import org.creativecraft.simplevision.SimpleVisionPlugin;
 import org.bukkit.entity.Player;
 
 public class PlaceholderApi extends PlaceholderExpansion {
     private final Nightvision nightvision;
-    private NightvisionPlugin plugin;
+    private SimpleVisionPlugin plugin;
     private String identifier = "nightvision";
 
-    public PlaceholderApi(NightvisionPlugin plugin) {
+    public PlaceholderApi(SimpleVisionPlugin plugin) {
         this.plugin = plugin;
         this.nightvision = new Nightvision(plugin);
     }

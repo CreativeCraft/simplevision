@@ -1,4 +1,4 @@
-package org.creativecraft.nightvision.commands;
+package org.creativecraft.simplevision.commands;
 
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.CommandHelp;
@@ -6,19 +6,25 @@ import co.aikar.commands.HelpEntry;
 import co.aikar.commands.annotation.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.creativecraft.nightvision.Nightvision;
-import org.creativecraft.nightvision.NightvisionPlugin;
+import org.creativecraft.simplevision.Nightvision;
+import org.creativecraft.simplevision.SimpleVisionPlugin;
 import org.bukkit.command.CommandSender;
 
 import java.util.HashSet;
 import java.util.UUID;
 
-@CommandAlias("%nightvision")
+@CommandAlias("%simplevision")
+@Description("Toggle nightvision to see in the dark.")
 public class NightvisionCommand extends BaseCommand {
-    private final NightvisionPlugin plugin;
+    private final SimpleVisionPlugin plugin;
     private final Nightvision nightvision;
 
-    public NightvisionCommand(NightvisionPlugin plugin) {
+    /**
+     * Initialize the Nightvision command.
+     *
+     * @param plugin
+     */
+    public NightvisionCommand(SimpleVisionPlugin plugin) {
         this.plugin = plugin;
         this.nightvision = new Nightvision(plugin);
     }
@@ -30,7 +36,7 @@ public class NightvisionCommand extends BaseCommand {
      */
     @HelpCommand
     @Syntax("[page]")
-    @Description("View the nightvision help.")
+    @Description("View the plugin help.")
     public void onHelp(CommandSender sender, CommandHelp help) {
         plugin.sendRawMessage(sender, plugin.localize("messages.help.header"));
 
@@ -54,10 +60,10 @@ public class NightvisionCommand extends BaseCommand {
      */
     @Default
     @Subcommand("toggle")
-    @CommandPermission("nightvision.use")
+    @CommandPermission("simplevision.use")
     @Description("Toggle nightvision mode.")
     public void onToggle(Player sender) {
-        boolean status = plugin.getUserDataConfig().getUserData().getBoolean("players." + sender.getUniqueId());
+        boolean status = plugin.getUserDataConfig().getBoolean("players." + sender.getUniqueId());
 
         if (!status) {
             nightvision.enable(sender);
@@ -76,10 +82,10 @@ public class NightvisionCommand extends BaseCommand {
      * @param sender The command sender.
      */
     @Subcommand("list")
-    @CommandPermission("nightvision.admin")
+    @CommandPermission("simplevision.admin")
     @Description("List players with nightvision active.")
     public void onList(CommandSender sender) {
-        ConfigurationSection keys = plugin.getUserDataConfig().getUserData().getConfigurationSection("players");
+        ConfigurationSection keys = plugin.getUserDataConfig().getConfigurationSection("players");
         HashSet<String> players = new HashSet<String>();
 
         plugin.sendRawMessage(sender, plugin.localize("messages.list.header"));
@@ -113,8 +119,8 @@ public class NightvisionCommand extends BaseCommand {
      * @param sender The command sender.
      */
     @Subcommand("reload")
-    @CommandPermission("nightvision.admin")
-    @Description("Reload the nightvision plugin configuration.")
+    @CommandPermission("simplevision.admin")
+    @Description("Reload the plugin configuration.")
     public void onReload(CommandSender sender) {
         try {
             plugin.reload();

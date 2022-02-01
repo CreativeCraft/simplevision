@@ -1,4 +1,4 @@
-package org.creativecraft.nightvision;
+package org.creativecraft.simplevision;
 
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -6,9 +6,9 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 public class Nightvision {
-    private final NightvisionPlugin plugin;
+    private final SimpleVisionPlugin plugin;
 
-    public Nightvision(NightvisionPlugin plugin) {
+    public Nightvision(SimpleVisionPlugin plugin) {
         this.plugin = plugin;
     }
 
@@ -30,22 +30,22 @@ public class Nightvision {
             )
         );
 
-        plugin.getUserDataConfig().getUserData().set("players." + player.getUniqueId(), true);
-        plugin.getUserDataConfig().saveUserData();
+        plugin.getUserDataConfig().set("players." + player.getUniqueId(), true);
+        plugin.saveUserDataConfig();
     }
 
-/**
- * Disable the specified player's nightvision.
- *
- * @param player The player.
- */
-public void disable(Player player) {
-    player.playSound(player.getLocation(), Sound.ITEM_BOTTLE_FILL_DRAGONBREATH, 1L, 1L);
-    player.removePotionEffect(PotionEffectType.NIGHT_VISION);
+    /**
+     * Disable the specified player's nightvision.
+     *
+     * @param player The player.
+     */
+    public void disable(Player player) {
+        player.playSound(player.getLocation(), Sound.ITEM_BOTTLE_FILL_DRAGONBREATH, 1L, 1L);
+        player.removePotionEffect(PotionEffectType.NIGHT_VISION);
 
-    plugin.getUserDataConfig().getUserData().set("players." + player.getUniqueId(), null);
-    plugin.getUserDataConfig().saveUserData();
-}
+        plugin.getUserDataConfig().set("players." + player.getUniqueId(), null);
+        plugin.saveUserDataConfig();
+    }
 
     /**
      * Determine if the player has nightvision active.
@@ -53,6 +53,6 @@ public void disable(Player player) {
      * @param player The player.
      */
     public boolean isEnabled(Player player) {
-        return plugin.getUserDataConfig().getUserData().getBoolean("players." + player.getUniqueId());
+        return plugin.getUserDataConfig().getBoolean("players." + player.getUniqueId());
     }
 }
