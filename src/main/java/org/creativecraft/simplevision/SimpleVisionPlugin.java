@@ -30,7 +30,9 @@ public class SimpleVisionPlugin extends JavaPlugin {
     public void onEnable() {
         plugin = this;
 
-        registerConfigs();
+        registerConfig();
+        registerMessagesConfig();
+        registerUserDataConfig();
         registerListeners();
         registerSchedulers();
         registerCommands();
@@ -79,13 +81,27 @@ public class SimpleVisionPlugin extends JavaPlugin {
     /**
      * Register the plugin configuration.
      */
-    public void registerConfigs() {
-        getConfig().addDefault("command", "nightvision");
+    public void registerConfig() {
+        getConfig().addDefault("command", "nightvision|nv");
         getConfig().addDefault("nightvision.show-action-bar", true);
+        getConfig().addDefault("nightvision.persist.login", true);
+        getConfig().addDefault("nightvision.persist.death", true);
+        getConfig().addDefault("nightvision.persist.milkbucket", true);
         getConfig().options().copyDefaults(true);
         saveConfig();
+    }
 
+    /**
+     * Register the messages config.
+     */
+    public void registerMessagesConfig() {
         messagesConfig = new MessagesConfig(this);
+    }
+
+    /**
+     * Register the userdata config.
+     */
+    public void registerUserDataConfig() {
         userDataConfig = new UserDataConfig(this);
     }
 
@@ -192,7 +208,8 @@ public class SimpleVisionPlugin extends JavaPlugin {
      * Reload the plugin configuration.
      */
     public void reload() {
-        registerConfigs();
+        registerMessagesConfig();
+        registerUserDataConfig();
         reloadConfig();
     }
 }
