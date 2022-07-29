@@ -1,24 +1,23 @@
 package org.creativecraft.simplevision.integrations;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
-import org.creativecraft.simplevision.Nightvision;
 import org.creativecraft.simplevision.SimpleVisionPlugin;
 import org.bukkit.entity.Player;
 
 public class PlaceholderApi extends PlaceholderExpansion {
-    private final Nightvision nightvision;
     private SimpleVisionPlugin plugin;
     private String identifier = "nightvision";
 
     public PlaceholderApi(SimpleVisionPlugin plugin) {
         this.plugin = plugin;
-        this.nightvision = new Nightvision(plugin);
     }
 
     @Override
     public String onPlaceholderRequest(Player player, String s) {
-        if (s.equalsIgnoreCase("active")) {
-            return nightvision.isEnabled(player) ? "Yes" : "No";
+        if (s.equalsIgnoreCase("enabled")) {
+            return plugin.getNightvision().hasPlayer(player) ?
+                plugin.localize("messages.generic.enabled") :
+                plugin.localize("messages.generic.disabled");
         }
 
         return null;

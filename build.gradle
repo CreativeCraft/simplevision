@@ -28,10 +28,10 @@ dependencies {
 }
 
 shadowJar {
-  relocate 'co.aikar.commands', 'org.creativecraft.nightvision.acf'
-  relocate 'co.aikar.locales', 'org.creativecraft.nightvision.locales'
-  relocate 'de.themoep.minedown', 'org.creativecraft.nightvision.minedown'
-  relocate 'org.bstats', 'org.creativecraft.nightvision.bstats'
+  relocate 'co.aikar.commands', 'org.creativecraft.nightvision.lib.acf'
+  relocate 'co.aikar.locales', 'org.creativecraft.nightvision.lib.locales'
+  relocate 'de.themoep.minedown', 'org.creativecraft.nightvision.lib.minedown'
+  relocate 'org.bstats', 'org.creativecraft.nightvision.lib.bstats'
 }
 
 processResources {

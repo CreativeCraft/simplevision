@@ -22,6 +22,7 @@ public class SimpleVisionPlugin extends JavaPlugin {
     public static SimpleVisionPlugin plugin;
     private MessagesConfig messagesConfig;
     private UserDataConfig userDataConfig;
+    private NightvisionManager nightvisionManager;
 
     /**
      * Enable the plugin.
@@ -29,6 +30,7 @@ public class SimpleVisionPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         plugin = this;
+        nightvisionManager = new NightvisionManager(plugin);
 
         registerConfig();
         registerMessagesConfig();
@@ -57,6 +59,12 @@ public class SimpleVisionPlugin extends JavaPlugin {
      */
     @Override
     public void onDisable() {
+        for (Player player : getNightvision().getPlayers()) {
+            getNightvision().removeEffect(player);
+        }
+
+        getNightvision().clearPlayers();
+
         Bukkit.getScheduler().cancelTasks(plugin);
     }
 
@@ -67,7 +75,7 @@ public class SimpleVisionPlugin extends JavaPlugin {
         BukkitCommandManager commandManager = new BukkitCommandManager(this);
         CommandReplacements replacements = commandManager.getCommandReplacements();
 
-        replacements.addReplacement("simplevision", getConfig().getString("command", "nightvision"));
+        replacements.addReplacement("simplevision", getConfig().getString("command", "nightvision|nv"));
 
         commandManager.setFormat(MessageType.ERROR, ChatColor.GREEN, ChatColor.WHITE, ChatColor.GRAY);
         commandManager.setFormat(MessageType.SYNTAX, ChatColor.GREEN, ChatColor.WHITE, ChatColor.GRAY);
@@ -83,16 +91,32 @@ public class SimpleVisionPlugin extends JavaPlugin {
      */
     public void registerConfig() {
         getConfig().addDefault("command", "nightvision|nv");
-        getConfig().addDefault("nightvision.show-action-bar", true);
-        getConfig().addDefault("nightvision.persist.login", true);
-        getConfig().addDefault("nightvision.persist.death", true);
-        getConfig().addDefault("nightvision.persist.milkbucket", true);
+
+        getConfig().addDefault("action-bar.enabled", true);
+
+        getConfig().addDefault("sounds.enabled", true);
+        getConfig().addDefault("sounds.toggle-on", "ITEM_BOTTLE_FILL");
+        getConfig().addDefault("sounds.toggle-off", "ITEM_BOTTLE_EMPTY");
+
+        getConfig().addDefault("events.login.enabled", true);
+        getConfig().addDefault("events.login.message", true);
+        getConfig().addDefault("events.login.delay", 20);
+
+        getConfig().addDefault("events.death.enabled", true);
+        getConfig().addDefault("events.death.message", true);
+        getConfig().addDefault("events.death.delay", 1);
+
+        getConfig().addDefault("events.milk-bucket.enabled", true);
+        getConfig().addDefault("events.milk-bucket.message", true);
+        getConfig().addDefault("events.milk-bucket.delay", 1);
+
         getConfig().options().copyDefaults(true);
+
         saveConfig();
     }
 
     /**
-     * Register the messages config.
+     * Register the message config.
      */
     public void registerMessagesConfig() {
         messagesConfig = new MessagesConfig(this);
@@ -116,24 +140,13 @@ public class SimpleVisionPlugin extends JavaPlugin {
      * Register the plugin schedulers.
      */
     public void registerSchedulers() {
-        if (getConfig().getBoolean("nightvision.show-action-bar", true)) {
+        if (getConfig().getBoolean("action-bar.enabled", true)) {
             Bukkit.getScheduler().runTaskTimer(this, () -> {
-                for (Player player : Bukkit.getOnlinePlayers()) {
-                    if (userDataConfig.getUserData().getBoolean("players." + player.getUniqueId())) {
-                        plugin.sendActionMessage(player, plugin.localize("messages.toggle.action-bar"));
-                    }
+                for (Player player : getNightvision().getPlayers()) {
+                    plugin.sendActionMessage(player, plugin.localize("messages.toggle.action-bar"));
                 }
             }, 20L, 1L);
         }
-    }
-
-    /**
-     * Retrieve the messages configuration.
-     *
-     * @return MessagesConfig
-     */
-    public FileConfiguration getMessagesConfig() {
-        return messagesConfig.getMessages();
     }
 
     /**
@@ -146,10 +159,21 @@ public class SimpleVisionPlugin extends JavaPlugin {
     }
 
     /**
-     * Save the userdata configuration.
+     * Retrieve the nightvision instance.
+     *
+     * @return NightvisionManager
      */
-    public void saveUserDataConfig() {
-        userDataConfig.saveUserData();
+    public NightvisionManager getNightvision() {
+        return nightvisionManager;
+    }
+
+    /**
+     * Retrieve the userdata instance.
+     *
+     * @return UserData
+     */
+    public UserDataConfig getUserData() {
+        return userDataConfig;
     }
 
     /**

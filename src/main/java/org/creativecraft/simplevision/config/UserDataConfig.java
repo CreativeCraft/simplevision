@@ -2,9 +2,11 @@ package org.creativecraft.simplevision.config;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.creativecraft.simplevision.SimpleVisionPlugin;
 
 import java.io.File;
+import java.util.UUID;
 
 public class UserDataConfig {
     private final SimpleVisionPlugin plugin;
@@ -27,13 +29,7 @@ public class UserDataConfig {
             plugin.saveResource("userdata.yml", false);
         }
 
-        userData = new YamlConfiguration();
-
-        try {
-            userData.load(userDataFile);
-        } catch (Exception e) {
-            //
-        }
+        userData = YamlConfiguration.loadConfiguration(userDataFile);
     }
 
     /**
@@ -46,12 +42,36 @@ public class UserDataConfig {
     }
 
     /**
-     * Retrieve the user data file.
-     *
-     * @return File
+     * Save the player to the user data file.
      */
-    public File getUserDataFile() {
-        return userDataFile;
+    public void setPlayer(UUID player, Boolean value) {
+        getUserData().set("players." + player, value);
+        saveUserData();
+    }
+
+    /**
+     * Save the player to the user data file.
+     */
+    public void setPlayer(Player player, Boolean value) {
+        setPlayer(player.getUniqueId(), value);
+    }
+
+    /**
+     * Determine if the player exists in the user data.
+     *
+     * @return Boolean
+     */
+    public Boolean hasPlayer(UUID player) {
+        return plugin.getUserDataConfig().getBoolean("players." + player);
+    }
+
+    /**
+     * Determine if the player exists in the userdata.
+     *
+     * @return Boolean
+     */
+    public Boolean hasPlayer(Player player) {
+        return hasPlayer(player.getUniqueId());
     }
 
     /**

@@ -11,16 +11,13 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.potion.PotionEffectType;
-import org.creativecraft.simplevision.Nightvision;
 import org.creativecraft.simplevision.SimpleVisionPlugin;
 
 public class EventListener implements Listener {
     private final SimpleVisionPlugin plugin;
-    private final Nightvision nightvision;
 
     public EventListener(SimpleVisionPlugin plugin) {
         this.plugin = plugin;
-        this.nightvision = new Nightvision(plugin);
     }
 
     /**
@@ -33,11 +30,20 @@ public class EventListener implements Listener {
         Player player = event.getPlayer();
 
         if (
-            plugin.getUserDataConfig().getBoolean("players." + player.getUniqueId().toString()) &&
-            plugin.getConfig().getBoolean("nightvision.persist.login")
+            !plugin.getConfig().getBoolean("events.login.enabled") ||
+            !plugin.getUserData().hasPlayer(player)
+
         ) {
-            nightvision.enable(player);
+            return;
         }
+
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            plugin.getNightvision().enable(player);
+
+            if (plugin.getConfig().getBoolean("events.login.message")) {
+                plugin.sendMessage(player, plugin.localize("messages.events.login"));
+            }
+        }, Math.max(1L, plugin.getConfig().getLong("events.login.delay", 20L)));
     }
 
     /**
@@ -47,9 +53,17 @@ public class EventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerQuit(PlayerQuitEvent event) {
-        if (!plugin.getConfig().getBoolean("nightvision.persist.login")) {
-            nightvision.disable(event.getPlayer());
+        Player player = event.getPlayer();
+
+        if (!plugin.getNightvision().hasPlayer(player)) {
+            return;
         }
+
+        if (!plugin.getConfig().getBoolean("events.login.enabled")) {
+            plugin.getNightvision().disable(event.getPlayer());
+        }
+
+        plugin.getNightvision().removePlayer(player);
     }
 
     /**
@@ -61,16 +75,23 @@ public class EventListener implements Listener {
     public void onPlayerRespawn(PlayerRespawnEvent event) {
         Player player = event.getPlayer();
 
+        if (!plugin.getNightvision().hasPlayer(player)) {
+            return;
+        }
+
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
-            if (plugin.getUserDataConfig().getBoolean("players." + player.getUniqueId().toString())) {
-                if (plugin.getConfig().getBoolean("nightvision.persist.death")) {
-                    nightvision.enable(player);
-                    return;
+            if (plugin.getConfig().getBoolean("events.death.enabled")) {
+                plugin.getNightvision().addEffect(player);
+
+                if (plugin.getConfig().getBoolean("events.death.message")) {
+                    plugin.sendMessage(player, plugin.localize("messages.events.death"));
                 }
 
-                nightvision.disable(player);
+                return;
             }
-        }, 20);
+
+            plugin.getNightvision().disable(player);
+        }, Math.max(1L, plugin.getConfig().getLong("events.death.delay", 1L)));
     }
 
     /**
@@ -82,24 +103,26 @@ public class EventListener implements Listener {
     public void onBucketUse(PlayerItemConsumeEvent event) {
         Player player = event.getPlayer();
 
-        plugin.getLogger().info(plugin.getConfig().getString("nightvision.persist.milkbucket"));
-
         if (
+            !plugin.getNightvision().hasPlayer(player) ||
             !event.getItem().getType().equals(Material.MILK_BUCKET) ||
-            !player.hasPotionEffect(PotionEffectType.NIGHT_VISION) ||
-            !nightvision.isEnabled(player)
+            !player.hasPotionEffect(PotionEffectType.NIGHT_VISION)
         ) {
             return;
         }
 
-        if (plugin.getConfig().getBoolean("nightvision.persist.milkbucket")) {
+        if (plugin.getConfig().getBoolean("events.milk-bucket.enabled")) {
             Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                nightvision.enable(player);
-            }, 1);
+                plugin.getNightvision().addEffect(player);
+
+                if (plugin.getConfig().getBoolean("events.milk-bucket.message")) {
+                    plugin.sendMessage(player, plugin.localize("messages.events.milk-bucket"));
+                }
+            }, Math.max(1L, plugin.getConfig().getLong("events.milk-bucket.delay", 1L)));
 
             return;
         }
 
-        nightvision.disable(player);
+        plugin.getNightvision().disable(player);
     }
 }
