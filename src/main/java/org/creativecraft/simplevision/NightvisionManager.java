@@ -44,6 +44,53 @@ public class NightvisionManager {
     }
 
     /**
+     * Retrieve the current players with nightvision.
+     *
+     * @return ArrayList
+     */
+    public ArrayList<Player> getPlayers() {
+        return players;
+    }
+
+    /**
+     * Add the specified player to the nightvision list.
+     *
+     * @param player The player.
+     */
+    public void addPlayer(Player player) {
+        if (players.contains(player)) {
+            return;
+        }
+
+        players.add(player);
+    }
+
+    /**
+     * Remove the specified player from the nightvision list.
+     *
+     * @param player The player.
+     */
+    public void removePlayer(Player player) {
+        players.remove(player);
+    }
+
+    /**
+     * Determine if the player has nightvision active.
+     *
+     * @param player The player.
+     */
+    public boolean hasPlayer(Player player) {
+        return players.contains(player);
+    }
+
+    /**
+     * Remove all players from the nightvision list.
+     */
+    public void clearPlayers() {
+        players.clear();
+    }
+
+    /**
      * Add the nightvision potion effects to the specified player.
      *
      * @param player The player.
@@ -86,52 +133,5 @@ public class NightvisionManager {
         }
 
         player.removePotionEffect(PotionEffectType.NIGHT_VISION);
-    }
-
-    /**
-     * Determine if the player has nightvision active.
-     *
-     * @param player The player.
-     */
-    public boolean hasPlayer(Player player) {
-        return players.contains(player);
-    }
-
-    /**
-     * Add the specified player to the nightvision list.
-     *
-     * @param player The player.
-     */
-    public void addPlayer(Player player) {
-        if (players.contains(player)) {
-            return;
-        }
-
-        players.add(player);
-    }
-
-    /**
-     * Remove the specified player from the nightvision list.
-     *
-     * @param player The player.
-     */
-    public void removePlayer(Player player) {
-        players.remove(player);
-    }
-
-    /**
-     * Retrieve the current players with nightvision.
-     *
-     * @return ArrayList
-     */
-    public ArrayList<Player> getPlayers() {
-        return players;
-    }
-
-    /**
-     * Remove all players from the nightvision list.
-     */
-    public void clearPlayers() {
-        players.clear();
     }
 }
